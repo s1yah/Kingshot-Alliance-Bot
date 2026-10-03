@@ -1,108 +1,69 @@
-# Getting Started app for Discord
+# Server Management & NAP Discord Bot
 
-This project contains a basic rock-paper-scissors-style Discord app written in JavaScript, built for the [getting started guide](https://discord.com/developers/docs/getting-started).
+This is a custom Discord bot built to help manage our server, specifically designed for posting rules, enforcing NAP (Non-Aggression Pact) guidelines, and sending out high-priority staff announcements. 
 
-![Demo of app](https://github.com/discord/discord-example-app/raw/main/assets/getting-started-demo.gif?raw=true)
+*Note: This project was built by extending the [Discord example app template](https://github.com/discord/discord-example-app) originally provided by Shay DeWael.*
 
-## Project structure
-Below is a basic overview of the project structure:
+## Features
 
-```
-├── examples    -> short, feature-specific sample apps
-│   ├── app.js  -> finished app.js code
-│   ├── button.js
-│   ├── command.js
-│   ├── modal.js
-│   ├── selectMenu.js
-├── .env.sample -> sample .env file
-├── app.js      -> main entrypoint for app
-├── commands.js -> slash command payloads + helpers
-├── game.js     -> logic specific to RPS
-├── utils.js    -> utility functions and enums
-├── package.json
-├── README.md
-└── .gitignore
-```
+- **📜 Post Server Rules**: Quickly post a beautifully formatted embed of the core server rules.
+- **🚨 Post NAP Rules**: Post the Non-Aggression Pact rules for the Kingdom/Alliance.
+- **📣 Staff Announcements**: Send out important announcements that automatically ping leadership roles (`R5`, `R4`, `R3`, `R2`, `R1/CHAOS CREW`) and notify the general chat channel.
 
-## Running app locally
+## Tech Stack & Framework
 
-Before you start, you'll need to install [NodeJS](https://nodejs.org/en/download/) and [create a Discord app](https://discord.com/developers/applications) with the proper permissions:
-- `applications.commands`
-- `bot` (with Send Messages enabled)
+- **[Node.js](https://nodejs.org/)**: The runtime environment.
+- **[Discord.js](https://discord.js.org/)**: The core framework used to interact with the Discord API. It handles connecting to the Discord Gateway, listening to interaction events, and creating rich embeds.
+- **[Dotenv](https://www.npmjs.com/package/dotenv)**: Manages secure environment variables for API tokens and IDs.
 
+## Project Structure
 
-Configuring the app is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
-
-### Setup project
-
-First clone the project:
-```
-git clone https://github.com/discord/discord-example-app.git
+```text
+├── .env                  -> (Create this yourself) Stores your sensitive keys and IDs
+├── bot.js                -> Main entry point containing bot logic, event listeners, and embed definitions
+├── deploy-commands.js    -> Utility script to register slash commands to the Discord REST API
+├── package.json          -> Lists dependencies and defines run scripts (start, dev, deploy)
+└── README.md             -> Project documentation
 ```
 
-Then navigate to its directory and install dependencies:
+## Available Commands
+
+- `/postrules` - Posts the main server rules. *(Requires `Manage Messages` permission)*
+- `/postnap` - Posts the NAP rules. *(Requires `Manage Messages` permission)*
+- `/announcement <message>` - Sends an official announcement, pings leadership roles, and forwards a notification to the general chat. *(Requires `Manage Server` permission)*
+
+## Getting Started
+
+### 1. Prerequisites
+- [Node.js](https://nodejs.org/en/download/) (v18 or higher)
+- A Discord App/Bot created via the [Discord Developer Portal](https://discord.com/developers/applications).
+- Make sure the bot has the `Message Content`, `Server Members`, and `Presence` intents enabled if required, along with permissions to send messages, manage messages, and mention roles.
+
+### 2. Setup Configuration
+Create a `.env` file in the root directory and add the following variables:
+
+```env
+DISCORD_TOKEN=your_bot_token_here
+APP_ID=your_application_id_here
+GUILD_ID=your_server_id_here
+GENERAL_CHANNEL_ID=your_general_chat_channel_id_here
 ```
-cd discord-example-app
+
+### 3. Installation
+Install all required dependencies:
+```bash
 npm install
 ```
-### Get app credentials
 
-Fetch the credentials from your app's settings and add them to a `.env` file (see `.env.sample` for an example). You'll need your app ID (`APP_ID`), bot token (`DISCORD_TOKEN`), and public key (`PUBLIC_KEY`).
-
-Fetching credentials is covered in detail in the [getting started guide](https://discord.com/developers/docs/getting-started).
-
-> 🔑 Environment variables can be added to the `.env` file in Glitch or when developing locally, and in the Secrets tab in Replit (the lock icon on the left).
-
-### Install slash commands
-
-The commands for the example app are set up in `commands.js`. All of the commands in the `ALL_COMMANDS` array at the bottom of `commands.js` will be installed when you run the `register` command configured in `package.json`:
-
-```
-npm run register
+### 4. Deploy Slash Commands
+Before using the commands, you need to register them to your server:
+```bash
+npm run deploy
 ```
 
-### Run the app
-
-After your credentials are added, go ahead and run the app:
-
+### 5. Run the Bot
+Start the bot normally:
+```bash
+npm start
 ```
-node app.js
-```
-
-> ⚙️ A package [like `nodemon`](https://github.com/remy/nodemon), which watches for local changes and restarts your app, may be helpful while locally developing.
-
-If you aren't following the [getting started guide](https://discord.com/developers/docs/getting-started), you can move the contents of `examples/app.js` (the finished `app.js` file) to the top-level `app.js`.
-
-### Set up interactivity
-
-The project needs a public endpoint where Discord can send requests. To develop and test locally, you can use something like [`ngrok`](https://ngrok.com/) to tunnel HTTP traffic.
-
-Install ngrok if you haven't already, then start listening on port `3000`:
-
-```
-ngrok http 3000
-```
-
-You should see your connection open:
-
-```
-Tunnel Status                 online
-Version                       2.0/2.0
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    https://1234-someurl.ngrok.io -> localhost:3000
-
-Connections                  ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
-```
-
-Copy the forwarding address that starts with `https`, in this case `https://1234-someurl.ngrok.io`, then go to your [app's settings](https://discord.com/developers/applications).
-
-On the **General Information** tab, there will be an **Interactions Endpoint URL**. Paste your ngrok address there, and append `/interactions` to it (`https://1234-someurl.ngrok.io/interactions` in the example).
-
-Click **Save Changes**, and your app should be ready to run 🚀
-
-## Other resources
-- Read **[the documentation](https://discord.com/developers/docs/intro)** for in-depth information about API features.
-- Browse the `examples/` folder in this project for smaller, feature-specific code examples
-- Join the **[Discord Developers server](https://discord.gg/discord-developers)** to ask questions about the API, attend events hosted by the Discord API team, and interact with other devs.
-- Check out **[community resources](https://discord.com/developers/docs/topics/community-resources#community-resources)** for language-specific tools maintained by community members.
+*For local development, you can use `npm run dev` to automatically restart the bot when files change.*
